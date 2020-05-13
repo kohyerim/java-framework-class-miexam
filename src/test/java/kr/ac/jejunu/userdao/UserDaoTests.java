@@ -22,6 +22,7 @@ public class UserDaoTests {
         assertThat(user.getPassword(), is(password));
     }
 
+    @Test
     public void createUser() throws SQLException, ClassNotFoundException {
         User user = new User();
         user.setName(name);
