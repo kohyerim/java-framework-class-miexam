@@ -3,6 +3,8 @@ package kr.ac.jejunu.userdao;
 
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -15,7 +17,13 @@ public class UserDaoTests {
     @Test
     public void testGet() throws SQLException, ClassNotFoundException {
         Integer id = 1;
-        UserDao userDao = new UserDao();
+        UserDao userDao = new UserDao() {
+            @Override
+            public Connection getConnection() throws SQLException, ClassNotFoundException {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                return DriverManager.getConnection("jdbc:mysql://localhost/mydb?serverTimezone=UTC", "hyerim", "1234");
+            }
+        };
         User user = userDao.get(id);
         assertThat(user.getId(), is(id));
         assertThat(user.getName(), is(name));
@@ -27,7 +35,13 @@ public class UserDaoTests {
         User user = new User();
         user.setName(name);
         user.setPassword(password);
-        UserDao userDao = new UserDao();
+        UserDao userDao = new UserDao() {
+            @Override
+            public Connection getConnection() throws SQLException, ClassNotFoundException {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                return DriverManager.getConnection("jdbc:mysql://localhost/mydb?serverTimezone=UTC", "hyerim", "1234");
+            }
+        };
         userDao.insert(user);
         assertThat(user.getId(), greaterThan(0));
 
