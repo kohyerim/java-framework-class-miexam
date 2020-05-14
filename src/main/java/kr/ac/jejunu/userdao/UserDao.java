@@ -1,7 +1,5 @@
 package kr.ac.jejunu.userdao;
 
-import org.graalvm.compiler.nodes.InliningLog;
-
 import javax.sql.DataSource;
 import java.sql.*;
 
@@ -21,7 +19,7 @@ public class UserDao {
 
         try{
             connection = dataSource.getConnection();
-            StatementStrategy statementStrategy = new GetStrategy();
+            StatementStrategy statementStrategy = new GetStatementStrategy();
             preparedStatement = statementStrategy.makeStrategy(id, connection);
 
             resultSet = preparedStatement.executeQuery();
@@ -91,7 +89,7 @@ public class UserDao {
 
         try {
             connection = dataSource.getConnection();
-            StatementStrategy statementStrategy = new UpdateStateStrategy();
+            StatementStrategy statementStrategy = new UpdateStatementStrategy();
             preparedStatement = statementStrategy.makeStrategy(user, connection);
         } finally {
             try {
@@ -113,7 +111,7 @@ public class UserDao {
 
         try {
             connection = dataSource.getConnection();
-            StatementStrategy statementStrategy = new DeleteStatmetStrategy();
+            StatementStrategy statementStrategy = new DeleteStatementStrategy();
             preparedStatement = statementStrategy.makeStrategy(id, connection);
 
         } finally {

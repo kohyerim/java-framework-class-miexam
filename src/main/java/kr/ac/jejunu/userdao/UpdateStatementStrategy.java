@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class UpdateStateStrategy implements StatementStrategy {
+public class UpdateStatementStrategy implements StatementStrategy {
     @Override
     public PreparedStatement makeStrategy(Object object, Connection connection) throws SQLException {
         User user = (User) object;
