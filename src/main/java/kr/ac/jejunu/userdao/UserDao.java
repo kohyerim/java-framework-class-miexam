@@ -1,5 +1,7 @@
 package kr.ac.jejunu.userdao;
 
+import org.graalvm.compiler.nodes.InliningLog;
+
 import javax.sql.DataSource;
 import java.sql.*;
 
@@ -19,8 +21,8 @@ public class UserDao {
 
         try{
             connection = dataSource.getConnection();
-            preparedStatement = connection.prepareStatement("select id, name, password from userinfo where id = ?");
-            preparedStatement.setInt(1, id);
+            StatementStrategy statementStrategy = new GetStrategy();
+            preparedStatement = statementStrategy.makeStrategy(id, connection);
 
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()){
@@ -58,10 +60,8 @@ public class UserDao {
 
         try{
             connection = dataSource.getConnection();
-            preparedStatement = connection.prepareStatement("insert into userinfo (name, password) values (?, ?)", Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getPassword());
-            preparedStatement.executeUpdate();
+            StatementStrategy statementStrategy = new InsertStatementStrategy();
+            preparedStatement = statementStrategy.makeStrategy(user, connection);
             resultSet = preparedStatement.getGeneratedKeys();
             resultSet.next();
             user.setId(resultSet.getInt(1));
@@ -91,11 +91,8 @@ public class UserDao {
 
         try {
             connection = dataSource.getConnection();
-            preparedStatement = connection.prepareStatement("update userinfo set name = ?, password = ? where id = ?");
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getPassword());
-            preparedStatement.setInt(3, user.getId());
-            preparedStatement.executeUpdate();
+            StatementStrategy statementStrategy = new UpdateStateStrategy();
+            preparedStatement = statementStrategy.makeStrategy(user, connection);
         } finally {
             try {
                 preparedStatement.close();
@@ -116,9 +113,9 @@ public class UserDao {
 
         try {
             connection = dataSource.getConnection();
-            preparedStatement = connection.prepareStatement("delete from userinfo where id = ?");
-            preparedStatement.setInt(1, id);
-            preparedStatement.executeUpdate();
+            StatementStrategy statementStrategy = new DeleteStatmetStrategy();
+            preparedStatement = statementStrategy.makeStrategy(id, connection);
+
         } finally {
             try {
                 preparedStatement.close();
