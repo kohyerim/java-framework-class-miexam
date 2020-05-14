@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class HallaUserDao extends UserDao {
+public class HallaConnectionMaker implements ConnectionMaker {
     @Override
-    public Connection getConnection() throws SQLException, ClassNotFoundException {
+    public Connection getConnection() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         // Halla에 맞는 db사용
         return DriverManager.getConnection("jdbc:mysql://localhost/mydb?serverTimezone=UTC", "hyerim", "1234");
