@@ -1,50 +1,23 @@
 package kr.ac.jejunu.userdao;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-
-import java.lang.reflect.GenericArrayType;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.PropertyResourceBundle;
-
 public class UserDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final JejuJdbcTemplate jdbcTemplate;
 
-    protected UserDao(JdbcTemplate jdbcTemplate) {
+    protected UserDao(JejuJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public User get(Integer id) {
         Object[] params = new Object[]{id};
         String sql = "select id, name, password from userinfo where id = ?";
-        return jdbcTemplate.query(sql, params, rs -> {
-            User user = null;
-            if(rs.next()){
-                user = new User();
-                user.setId(rs.getInt("id"));
-                user.setName((rs.getString("name")));
-                user.setPassword((rs.getString("password")));
-                return user;
-            }
-            return user;
-        });
+        return jdbcTemplate.get(sql, params);
     }
 
     public void insert(User user) {
         Object[] params = new Object[]{user.getName(), user.getPassword()};
         String sql = "insert into userinfo (name, password) value (?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement preparedStatement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            for(int i=0; i<params.length; i++){
-                preparedStatement.setObject(i+1, params[i]);
-            }
-            return preparedStatement;
-        }, keyHolder);
-        user.setId(keyHolder.getKey().intValue());
+        jdbcTemplate.insert(sql, params, user);
     }
 
     public void update(User user) {
