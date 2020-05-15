@@ -5,126 +5,49 @@ import java.sql.*;
 
 public class UserDao {
 
-    private final DataSource dataSource;
+    private final JdbcContext jdbcContext;
 
-    protected UserDao(DataSource dataSource) {
-        this.dataSource = dataSource;
+    protected UserDao(JdbcContext jdbcContext) {
+        this.jdbcContext = jdbcContext;
     }
 
-    public User get(Integer id) throws SQLException {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        User user = null;
-
-        try{
-            connection = dataSource.getConnection();
-            StatementStrategy statementStrategy = new GetStatementStrategy();
-            preparedStatement = statementStrategy.makeStrategy(id, connection);
-
-            resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()){
-                user = new User();
-                user.setId(resultSet.getInt("id"));
-                user.setName(resultSet.getString("name"));
-                user.setPassword(resultSet.getString("password"));
-            }
-        }finally {
-            try{
-                resultSet.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
+    public User get(Integer id) {
+        StatementStrategy statementStrategy = new GetStatementStrategy(id);
         //리턴
-        return user;
+        return jdbcContext.jdbcContextForGet(statementStrategy);
     }
 
     public void insert(User user) throws SQLException {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
-        try{
-            connection = dataSource.getConnection();
-            StatementStrategy statementStrategy = new InsertStatementStrategy();
-            preparedStatement = statementStrategy.makeStrategy(user, connection);
-            resultSet = preparedStatement.getGeneratedKeys();
-            resultSet.next();
-            user.setId(resultSet.getInt(1));
-        } finally {
-            try {
-                resultSet.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
+        StatementStrategy statementStrategy = new InsertStatementStrategy(user);
+        jdbcContext.jdbcContextForInsert(user, statementStrategy);
     }
 
     public void update(User user) throws SQLException{
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-
-        try {
-            connection = dataSource.getConnection();
-            StatementStrategy statementStrategy = new UpdateStatementStrategy();
-            preparedStatement = statementStrategy.makeStrategy(user, connection);
-        } finally {
-            try {
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+//        Connection connection = null;
+//        PreparedStatement preparedStatement = null;
+//
+//        try {
+//            connection = dataSource.getConnection();
+//            StatementStrategy statementStrategy = new UpdateStatementStrategy();
+//            preparedStatement = statementStrategy.makeStrategy(user, connection);
+//        } finally {
+//            try {
+//                preparedStatement.close();
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//            try {
+//                connection.close();
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//        }
+        StatementStrategy statementStrategy = new UpdateStatementStrategy(user);
+        jdbcContext.jdbcContextForUpdateAndDelete(statementStrategy);
     }
 
-    public void delete(Integer id) throws SQLException {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-
-        try {
-            connection = dataSource.getConnection();
-            StatementStrategy statementStrategy = new DeleteStatementStrategy();
-            preparedStatement = statementStrategy.makeStrategy(id, connection);
-
-        } finally {
-            try {
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+    public void delete(Integer id) {
+        StatementStrategy statementStrategy = new DeleteStatementStrategy(id);
+        jdbcContext.jdbcContextForUpdateAndDelete(statementStrategy);
     }
 }
