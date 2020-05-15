@@ -22,7 +22,7 @@ public class UserDao {
 
     public void update(User user) {
         Object[] params = new Object[]{user.getName(), user.getPassword(), user.getId()};
-        String sql = "update userinfo set name = ?, password = ?, where id = ?";
+        String sql = "update userinfo set name = ?, password = ? where id = ?";
         jdbcContext.updateOrDelete(sql, params);
     }
 
