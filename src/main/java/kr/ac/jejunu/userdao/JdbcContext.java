@@ -129,7 +129,7 @@ public class JdbcContext {
 
     public void updateOrDelete(String sql, Object[] params) {
         StatementStrategy statementStrategy = connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement("update userinfo set name = ?, password = ? where id = ?");
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
             for(int i=0; i<params.length; i++){
                 preparedStatement.setObject(i+1, params[i]);
             }

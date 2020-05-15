@@ -1,8 +1,5 @@
 package kr.ac.jejunu.userdao;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-
 public class UserDao {
 
     private final JdbcContext jdbcContext;
